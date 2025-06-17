@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
 const path = require("path");
+const methodOverride = require("method-override");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/StayNest";
 
@@ -21,6 +22,7 @@ async function main() {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
 // Root route
 app.get("/", (req, res) => {
@@ -51,6 +53,10 @@ app.get("/listings", async (req, res) => {
         res.status(500).send("Error fetching listings");
     }
 });
+//new route
+app.get("/listings/new", (req,res) => {
+    res.render("listings/new.ejs");
+});
 
 // Show route – single listing by ID
 app.get("/listings/:id", async (req, res) => {
@@ -66,6 +72,45 @@ app.get("/listings/:id", async (req, res) => {
         res.status(500).send("Error finding listing");
     }
 });
+
+//create route
+app.post("/listings", async (req,res) => {
+   // let listing = req.body.listing;
+   // console.log(listing);
+    const newListing = new Listing(req.body.listing);
+    await newListing.save();
+    res.redirect("/listings");
+});
+
+// Edit route – show the edit form for a listing
+app.get("/listings/:id/edit", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const listing = await Listing.findById(id);
+        if (!listing) {
+            return res.status(404).send("Listing not found");
+        }
+        res.render("listings/edit", { listing }); // No leading slash and no .ejs needed
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading edit page");
+    }
+});
+// Update route – update listing data
+app.put("/listings/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+        res.redirect(`/listings/${id}`); // ✅ backticks for interpolation
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error updating listing");
+    }
+});
+
+
+
+
 
 /*
 // COMMENTED: sample testing listing creation
