@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
+const ejsMate = require("ejs-mate");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/StayNest";
 
@@ -23,6 +24,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.engine("ejs", ejsMate);
+app.use(express.static(path.join(__dirname, "/public")));
 
 // Root route
 app.get("/", (req, res) => {
@@ -105,6 +108,24 @@ app.put("/listings/:id", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send("Error updating listing");
+    }
+});
+
+// Delete route – remove a listing
+app.delete("/listings/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedListing = await Listing.findByIdAndDelete(id);
+        
+        if (!deletedListing) {
+            return res.status(404).send("Listing not found");
+        }
+
+        console.log("Deleted listing:", deletedListing);
+        res.redirect("/listings");
+    } catch (err) {
+        console.error("Error deleting listing:", err);
+        res.status(500).send("Server error while deleting listing");
     }
 });
 
