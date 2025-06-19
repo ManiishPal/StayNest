@@ -40,3 +40,7 @@
     justify-content: center;
     align-items: space-evenly;
 }
+card-img-top {
+    border-radius: 1rem !important;
+    object-fit: cover;;
+}
