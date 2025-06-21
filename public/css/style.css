@@ -44,3 +44,19 @@ card-img-top {
     border-radius: 1rem !important;
     object-fit: cover;;
 }
+
+.card-img-overlay {
+    opacity: 0;
+}
+.card:hover .card-img-overlay {
+    opacity: 0.2;
+    background-color: white;
+}
+
+.add-btn {
+    background-color: #fe424d !important;
+}
+
+.edit-btn {
+    background-color: #fe424d !important;
+}
