@@ -6,7 +6,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsyncs = require("./utils/wrapAsyncs.js");
-const ExpressError = require("./utils/ExpressError.js");
+const { listingSchema } = require("./schema.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/StayNest";
 
@@ -49,7 +49,7 @@ app.get("/listings", async (req, res) => {
 */
 
 // Index route – all listings
-app.get("/listings", async (req, res) => {
+app.get("/listings", wrapAsyncs(async (req, res) => {
     try {
         const allListings = await Listing.find({});
         res.render("listings/index", { allListings });
@@ -57,14 +57,14 @@ app.get("/listings", async (req, res) => {
         console.error(err);
         res.status(500).send("Error fetching listings");
     }
-});
+}));
 //new route
 app.get("/listings/new", (req,res) => {
     res.render("listings/new.ejs");
 });
 
 // Show route – single listing by ID
-app.get("/listings/:id", async (req, res) => {
+app.get("/listings/:id", wrapAsyncs(async (req, res) => {
     try {
         const { id } = req.params;
         const listing = await Listing.findById(id);
@@ -76,13 +76,14 @@ app.get("/listings/:id", async (req, res) => {
         console.error(err);
         res.status(500).send("Error finding listing");
     }
-});
+}));
 
 //create route
 app.post("/listings", wrapAsyncs(async ( req, res, next)  => {
    // let listing = req.body.listing;
    // console.log(listing);
-    
+    let result = listingSchema.validate(req.body);
+    console.log(result);
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
@@ -91,7 +92,7 @@ app.post("/listings", wrapAsyncs(async ( req, res, next)  => {
 );
 
 // Edit route – show the edit form for a listing
-app.get("/listings/:id/edit", async (req, res) => {
+app.get("/listings/:id/edit", wrapAsyncs(async (req, res) => {
     try {
         const { id } = req.params;
         const listing = await Listing.findById(id);
@@ -103,9 +104,9 @@ app.get("/listings/:id/edit", async (req, res) => {
         console.error(err);
         res.status(500).send("Error loading edit page");
     }
-});
+}));
 // Update route – update listing data
-app.put("/listings/:id", async (req, res) => {
+app.put("/listings/:id", wrapAsyncs(async (req, res) => {
     try {
         const { id } = req.params;
         await Listing.findByIdAndUpdate(id, { ...req.body.listing });
@@ -114,10 +115,10 @@ app.put("/listings/:id", async (req, res) => {
         console.error(err);
         res.status(500).send("Error updating listing");
     }
-});
+}));
 
 // Delete route – remove a listing
-app.delete("/listings/:id", async (req, res) => {
+app.delete("/listings/:id", wrapAsyncs(async (req, res) => {
     try {
         const { id } = req.params;
         const deletedListing = await Listing.findByIdAndDelete(id);
@@ -132,7 +133,7 @@ app.delete("/listings/:id", async (req, res) => {
         console.error("Error deleting listing:", err);
         res.status(500).send("Server error while deleting listing");
     }
-});
+}));
 
 
 
@@ -153,14 +154,12 @@ app.get("/testListing", async (req, res) => {
     res.send("successful testing");
 });
 */
-app.all("*", (req, res, next) => {
-    next(new ExpressError(404, "Page not found"));
-});
+
+
 
 app.use((err, req, res, next) => {
-    let { statusCode, message } = err;
-    res.status(statusCode).send(message);
-});
+    res.send("something went wrong"); 
+})
 
 app.listen(8080, () => {
     console.log("server is listening to port 8080"); 
