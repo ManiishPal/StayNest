@@ -36,6 +36,8 @@ router.get("/:id", wrapAsyncs(async (req, res) => {
         const listing = await Listing.findById(id).populate("reviews"); // Populate reviews to show them in the listing
         if (!listing) {
             return res.status(404).send("Listing not found");
+            req.flash("error", "Listing not found");
+            res.redirect("/listings");
         }
         res.render("listings/show", { listing }); 
     } catch (err) {
@@ -52,6 +54,7 @@ router.post("/", wrapAsyncs(async ( req, res, next)  => {
     console.log(result);
     const newListing = new Listing(req.body.listing);
     await newListing.save();
+    req.flash("success", "Successfully created a new listing!");
     res.redirect("/listings");
     
 })
@@ -64,6 +67,8 @@ router.get("/:id/edit", wrapAsyncs(async (req, res) => {
         const listing = await Listing.findById(id);
         if (!listing) {
             return res.status(404).send("Listing not found");
+            req.flash("error", "Listing not found");
+            res.redirect("/listings");
         }
         res.render("listings/edit", { listing }); // No leading slash and no .ejs needed
     } catch (err) {
@@ -76,6 +81,7 @@ router.put("/:id", wrapAsyncs(async (req, res) => {
     try {
         const { id } = req.params;
         await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+        req.flash("success", "Successfully updated the listing!");
         res.redirect(`/listings/${id}`); // ✅ backticks for interpolation
     } catch (err) {
         console.error(err);
@@ -94,6 +100,11 @@ router.delete("/:id", wrapAsyncs(async (req, res) => {
         }
 
         console.log("Deleted listing:", deletedListing);
+        req.flash("success", "Successfully deleted the listing!");
+         // Redirect to the listings index page after deletion
+         // ✅ Use res.redirect with a string path
+         // ✅ No need for leading slash in the path
+         // ✅ No need for .ejs extension in the path
         res.redirect("/listings");
     } catch (err) {
         console.error("Error deleting listing:", err);
