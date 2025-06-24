@@ -19,8 +19,12 @@ async function main() {
     await mongoose.connect(MONGO_URL);
 }
 
-async function initDB() {
-    await Listing.deleteMany({}); // Clear old data (optional)
-    await Listing.insertMany(initData.data); // Now matches schema
-    console.log("Data initialized successfully");
+
+const initDB = async () => {
+    await Listing.deleteMany({});
+    initData.data = initData.data.map((obj) => ({...obj, owner: "64f0c1b2e4d3f8b1c8e4a1a2"})); // Replace with actual owner ID
+    await Listing.insertMany(initData.data);
+    console.log("Database initialized with sample data");
 }
+
+initDB();
