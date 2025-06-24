@@ -28,7 +28,7 @@ router.get("/login", (req, res) => {
 
 router.post("/login", passport.authenticate("local", { failureRedirect: '/login', failureFlash: true }), async (req, res, next) => {
         req.flash("success", "Logged in successfully!");
-        res.redirect("/listings");
+        res.redirect("/listings"); 
 });
 
 module.exports = router;
