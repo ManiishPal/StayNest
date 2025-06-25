@@ -11,8 +11,8 @@ const listingSchema = new Schema({
         filename: String,
         url: {
             type: String,
-            default: "https://media.istockphoto.com/id/1322245598/vector/https://images.unsplash.com/photo-1693956965359-f6bfdf022d9f?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D-404-web-page-concept-pit-stairs-traffic-cones-and-warning-sign.jpg?s=2048x2048&w=is&k=20&c=Wk-RsiTdEe7PR9i9NsMMiXS9c5riqfqflrssWg2DvRU",
-            set: (v) => v === "" ? "https://media.istockphoto.com/id/1322245598/vector/error-404-web-page-concept-pit-stairs-traffic-cones-and-warning-sign.jpg?s=2048x2048&w=is&k=20&c=Wk-RsiTdEe7PR9i9NsMMiXS9c5riqfqflrssWg2DvRU" : v,
+            default: "https://images.unsplash.com/photo-1608463163741-a46b199d95cf?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            set: (v) => v === "" ? "https://images.unsplash.com/photo-1664523561450-e66ef2ffeecc?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" : v,
         },
     },
     description: String,
